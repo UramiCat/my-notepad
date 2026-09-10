@@ -303,7 +303,7 @@
       border: 1px solid var(--accent-color);
       border-radius: 15px;
       padding: 20px;
-      font-size: 1.05rem;
+      font-size: 16px;
       line-height: 1.6;
       outline: none;
       overflow-y: auto;
@@ -383,12 +383,13 @@
         </select>
 
         <!-- Font Size Selector -->
-        <select class="select-tool" onchange="setFontSize(this.value)">
-          <option value="16px">Size: Normal</option>
-          <option value="14px">Size: Small</option>
-          <option value="18px">Size: Medium</option>
-          <option value="20px">Size: Large</option>
-          <option value="24px">Size: Extra Large</option>
+        <select class="select-tool" id="fontSizeSelector" onchange="changeFontSize(this.value); this.selectedIndex=0;">
+          <option value="">Font Size</option>
+          <option value="12px">Small (12px)</option>
+          <option value="16px">Normal (16px)</option>
+          <option value="20px">Medium (20px)</option>
+          <option value="24px">Large (24px)</option>
+          <option value="30px">Extra Large (30px)</option>
         </select>
 
         <!-- Font Choice -->
@@ -442,7 +443,7 @@
       }
 
       if (notes.length === 0) {
-        createNewNote("Welcome Note 💖", "<div><b>Custom Color Highlighter & Font Size Controls Added!</b></div><div><br></div><div>• 🖍️ Choose any highlighter shade with the color picker or preset dropdown.</div><div>• Adjust text size using the font size selector.</div>");
+        createNewNote("Welcome Note 💖", "<div><b>Font Resizing Fixed!</b></div><div><br></div><div>• Highlight text and choose a size from the <b>Font Size</b> dropdown.</div><div>• Use the <b>Highlighter</b> tool to color your text!</div>");
       } else {
         currentNoteId = notes[0].id;
         render();
@@ -460,17 +461,26 @@
       localStorage.setItem('my_ultimate_font', fontClass);
     }
 
-    function setFontSize(size) {
+    /* Fixed Font Size Handler */
+    function changeFontSize(sizePx) {
+      if (!sizePx) return;
       const selection = window.getSelection();
       if (!selection.rangeCount || selection.isCollapsed) {
-        document.getElementById('noteBody').style.fontSize = size;
-      } else {
-        const span = document.createElement('span');
-        span.style.fontSize = size;
-        const range = selection.getRangeAt(0);
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
+        // If no text is highlighted, change default size of the editor box
+        document.getElementById('noteBody').style.fontSize = sizePx;
+        saveCurrentNote();
+        return;
       }
+
+      // Use built-in command to wrap selection in <font size="7"> then replace it with inline CSS style
+      document.execCommand('fontSize', false, '7');
+      const fontElements = document.querySelectorAll('#noteBody font[size="7"]');
+      
+      fontElements.forEach(fontEl => {
+        fontEl.removeAttribute('size');
+        fontEl.style.fontSize = sizePx;
+      });
+
       saveCurrentNote();
     }
 
