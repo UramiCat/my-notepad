@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Aesthetic Ultimate Notepad</title>
+  <!-- Google Fonts for Aesthetic Choices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Comfortaa:wght@500;700&family=Courier+Prime&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Cute Custom Heart Cursor */
+    * {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ff69b4"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto !important;
+    }
+
+    /* Color Preset Definitions */
+    :root {
+      --bg-color: #fff0f5;
+      --sidebar-bg: rgba(255, 228, 225, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --primary-color: #ff69b4;
+      --dark-color: #d87093;
+      --text-color: #4a3b40;
+      --accent-color: #ffb6c1;
+    }
+
+    body.theme-lavender {
+      --bg-color: #f3e8ff;
+      --sidebar-bg: rgba(233, 213, 255, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --primary-color: #b185db;
+      --dark-color: #7b2cbf;
+      --text-color: #3c2a4d;
+      --accent-color: #d8b4fe;
+    }
+
+    body.theme-matcha {
+      --bg-color: #f0f7f4;
+      --sidebar-bg: rgba(216, 235, 224, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --primary-color: #81b29a;
+      --dark-color: #4a7c59;
+      --text-color: #2b3a32;
+      --accent-color: #b7e4c7;
+    }
+
+    body.theme-peach {
+      --bg-color: #fff4ec;
+      --sidebar-bg: rgba(255, 226, 209, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --primary-color: #f2a65a;
+      --dark-color: #e07a5f;
+      --text-color: #4a3228;
+      --accent-color: #fec89a;
+    }
+
+    /* Font Styles */
+    body.font-default { font-family: 'Quicksand', sans-serif; }
+    body.font-cursive { font-family: 'Caveat', cursive; font-size: 1.2rem; }
+    body.font-typewriter { font-family: 'Courier Prime', monospace; }
+    body.font-rounded { font-family: 'Comfortaa', cursive; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: var(--bg-color);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: var(--text-color);
+      transition: background 0.3s ease;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 290px;
+      background-color: var(--sidebar-bg);
+      backdrop-filter: blur(10px);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      border-right: 2px solid var(--accent-color);
+    }
+
+    .sidebar h2 {
+      color: var(--dark-color);
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .theme-selector {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .theme-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .theme-dot:hover { transform: scale(1.2); }
+    .dot-pink { background-color: #ff69b4; }
+    .dot-lavender { background-color: #b185db; }
+    .dot-matcha { background-color: #81b29a; }
+    .dot-peach { background-color: #f2a65a; }
+
+    .search-box {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 15px;
+      border: 1px solid var(--accent-color);
+      outline: none;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.8);
+      font-size: 0.9rem;
+    }
+
+    .btn-add {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .btn-add:hover { transform: translateY(-2px); }
+
+    .note-list {
+      list-style: none;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .note-item {
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.85);
+      margin-bottom: 8px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--accent-color);
+      transition: all 0.2s;
+    }
+
+    .note-item:hover, .note-item.active {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .note-item.pinned {
+      border: 2px solid var(--dark-color);
+    }
+
+    .note-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .note-title-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      padding: 2px;
+      opacity: 0.7;
+    }
+
+    .btn-icon:hover { opacity: 1; }
+
+    /* Backup Buttons in Sidebar Footer */
+    .sidebar-footer {
+      margin-top: 10px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-small {
+      flex: 1;
+      font-size: 0.75rem;
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-color);
+      background: white;
+      color: var(--dark-color);
+      font-weight: bold;
+    }
+
+    /* Main Editor Area */
+    .editor-container {
+      flex: 1;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .title-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .note-title-input {
+      font-size: 1.6rem;
+      font-weight: bold;
+      border: none;
+      outline: none;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(4px);
+      color: var(--dark-color);
+      border-bottom: 2px dashed var(--accent-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      flex: 1;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: rgba(255,255,255,0.7);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--accent-color);
+    }
+
+    .btn-tool, select.select-tool {
+      background-color: white;
+      color: var(--dark-color);
+      border: 1px solid var(--accent-color);
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      outline: none;
+    }
+
+    .btn-tool:hover { background-color: var(--accent-color); color: white; }
+
+    /* Content Editable Note Box */
+    .note-body-editor {
+      flex: 1;
+      border: 1px solid var(--accent-color);
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      outline: none;
+      overflow-y: auto;
+      background-color: var(--card-bg);
+      backdrop-filter: blur(6px);
+      color: var(--text-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Highlight style */
+    mark {
+      background-color: #ffb6c1;
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--dark-color);
+      font-weight: bold;
+    }
+
+    #fileInput, #backupInput { display: none; }
+  </style>
+</head>
+<body id="appBody" class="font-default">
+
+  <div class="sidebar">
+    <h2>✨ Notes</h2>
+    
+    <!-- Theme Dots -->
+    <div class="theme-selector">
+      <div class="theme-dot dot-pink" title="Pink Theme" onclick="setTheme('')"></div>
+      <div class="theme-dot dot-lavender" title="Lavender Theme" onclick="setTheme('theme-lavender')"></div>
+      <div class="theme-dot dot-matcha" title="Matcha Theme" onclick="setTheme('theme-matcha')"></div>
+      <div class="theme-dot dot-peach" title="Peach Theme" onclick="setTheme('theme-peach')"></div>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search notes..." oninput="render()">
+
+    <button class="btn-add" onclick="createNewNote()">+ New Note</button>
+    <ul class="note-list" id="noteList"></ul>
+
+    <div class="sidebar-footer">
+      <button class="btn-small" onclick="exportAllBackup()">💾 Backup All</button>
+      <button class="btn-small" onclick="document.getElementById('backupInput').click()">📤 Restore</button>
+      <input type="file" id="backupInput" accept=".json" onchange="restoreBackup(event)">
+    </div>
+  </div>
+
+  <div class="editor-container">
+    <div class="top-bar">
+      <div class="title-row">
+        <input type="text" class="note-title-input" id="noteTitle" placeholder="Title your note..." oninput="saveCurrentNote()">
+        <button class="btn-tool" onclick="document.getElementById('fileInput').click()">🖼️ BG Image</button>
+        <button class="btn-tool" onclick="clearBackground()" id="clearBgBtn" style="display: none;">❌ Clear BG</button>
+        <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+      </div>
+
+      <!-- Formatting Toolbar -->
+      <div class="toolbar">
+        <button class="btn-tool" onclick="formatText('bold')"><b>B</b></button>
+        <button class="btn-tool" onclick="formatText('italic')"><i>I</i></button>
+        <button class="btn-tool" onclick="formatText('underline')"><u>U</u></button>
+        <button class="btn-tool" onclick="formatText('hiliteColor', '#ffb6c1')">🖍️ Highlight</button>
+        <button class="btn-tool" onclick="insertChecklist()">☑️ Add Checklist Item</button>
+
+        <!-- Font Choice -->
+        <select class="select-tool" onchange="setFont(this.value)">
+          <option value="font-default">Font: Quicksand</option>
+          <option value="font-cursive">Font: Cute Cursive</option>
+          <option value="font-typewriter">Font: Typewriter</option>
+          <option value="font-rounded">Font: Comfortaa</option>
+        </select>
+
+        <!-- Category Tags -->
+        <select class="select-tool" onchange="addTag(this.value); this.selectedIndex=0;">
+          <option value="">+ Add Category Tag</option>
+          <option value="🌸 Personal">🌸 Personal</option>
+          <option value="📚 Study">📚 Study</option>
+          <option value="🛍️ Shopping">🛍️ Shopping</option>
+          <option value="💡 Ideas">💡 Ideas</option>
+          <option value="🎀 To-Do">🎀 To-Do</option>
+        </select>
+
+        <button class="btn-tool" onclick="exportSingleNote()">📥 Export Note (.txt)</button>
+      </div>
+    </div>
+
+    <!-- Editable Content Area -->
+    <div class="note-body-editor" id="noteBody" contenteditable="true" oninput="saveCurrentNote(); updateWordCount();"></div>
+
+    <div class="bottom-bar">
+      <div id="wordCounter">Words: 0 | Characters: 0</div>
+      <div id="statusTag">Auto-saved</div>
+    </div>
+  </div>
+
+  <script>
+    let notes = JSON.parse(localStorage.getItem('my_ultimate_notes')) || [];
+    let currentNoteId = null;
+
+    function init() {
+      const savedTheme = localStorage.getItem('my_ultimate_theme');
+      if (savedTheme) document.body.className = savedTheme;
+
+      const savedFont = localStorage.getItem('my_ultimate_font');
+      if (savedFont) document.body.classList.add(savedFont);
+
+      const savedBg = localStorage.getItem('my_ultimate_bg');
+      if (savedBg) {
+        document.body.style.backgroundImage = `url('${savedBg}')`;
+        document.getElementById('clearBgBtn').style.display = 'inline-block';
+      }
+
+      if (notes.length === 0) {
+        createNewNote("Welcome Note 💖", "<div><b>All 7 Mega Features are Ready!</b></div><div><br></div><div>• 📌 <b>Pin Notes:</b> Click the pin next to a note title.</div><div>• 🔍 <b>Search:</b> Use the top-left box to filter.</div><div>• ☑️ <b>Checklists:</b> Click 'Add Checklist Item' above.</div><div>• 🖍️ <b>Text Styling:</b> Highlight, bold, or change fonts!</div><div>• 📥 <b>Backup & Export:</b> Save single notes or backup everything.</div>");
+      } else {
+        currentNoteId = notes[0].id;
+        render();
+      }
+    }
+
+    function setTheme(themeClass) {
+      document.body.className = themeClass + ' ' + (localStorage.getItem('my_ultimate_font') || '');
+      localStorage.setItem('my_ultimate_theme', themeClass);
+    }
+
+    function setFont(fontClass) {
+      document.body.classList.remove('font-default', 'font-cursive', 'font-typewriter', 'font-rounded');
+      document.body.classList.add(fontClass);
+      localStorage.setItem('my_ultimate_font', fontClass);
+    }
+
+    function formatText(command, value = null) {
+      document.execCommand(command, false, value);
+      saveCurrentNote();
+    }
+
+    function insertChecklist() {
+      const checkboxHTML = '<div><input type="checkbox" onclick="this.setAttribute(\'checked\', this.checked)"> &nbsp;New checklist task</div>';
+      document.execCommand('insertHTML', false, checkboxHTML);
+      saveCurrentNote();
+    }
+
+    function addTag(tag) {
+      if (!tag) return;
+      const tagHTML = ` &nbsp;<mark><b>${tag}</b></mark>&nbsp; `;
+      document.execCommand('insertHTML', false, tagHTML);
+      saveCurrentNote();
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imageData = e.target.result;
+          document.body.style.backgroundImage = `url('${imageData}')`;
+          localStorage.setItem('my_ultimate_bg', imageData);
+          document.getElementById('clearBgBtn').style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function clearBackground() {
+      document.body.style.backgroundImage = "none";
+      localStorage.removeItem('my_ultimate_bg');
+      document.getElementById('clearBgBtn').style.display = 'none';
+    }
+
+    function createNewNote(title = "Untitled Note", body = "") {
+      const newNote = {
+        id: Date.now(),
+        title: title,
+        body: body,
+        pinned: false
+      };
+      notes.unshift(newNote);
+      currentNoteId = newNote.id;
+      saveToLocalStorage();
+      render();
+    }
+
+    function togglePin(id, event) {
+      event.stopPropagation();
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        note.pinned = !note.pinned;
+        saveToLocalStorage();
+        render();
+      }
+    }
+
+    function selectNote(id) {
+      currentNoteId = id;
+      render();
+    }
+
+    function deleteNote(id, event) {
+      event.stopPropagation();
+      notes = notes.filter(n => n.id !== id);
+      if (notes.length === 0) {
+        createNewNote();
+      } else {
+        if (currentNoteId === id) currentNoteId = notes[0].id;
+        saveToLocalStorage();
+        render();
+      }
+    }
+
+    function saveCurrentNote() {
+      const titleInput = document.getElementById('noteTitle').value;
+      const bodyInput = document.getElementById('noteBody').innerHTML;
+
+      const note = notes.find(n => n.id === currentNoteId);
+      if (note) {
+        note.title = titleInput || "Untitled Note";
+        note.body = bodyInput;
+        saveToLocalStorage();
+        updateListOnly();
+        
+        const status = document.getElementById('statusTag');
+        status.innerText = "Saving...";
+        setTimeout(() => status.innerText = "Auto-saved", 300);
+      }
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('noteBody').innerText || "";
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      document.getElementById('wordCounter').innerText = `Words: ${words} | Characters: ${chars}`;
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('my_ultimate_notes', JSON.stringify(notes));
+    }
+
+    function render() {
+      const listContainer = document.getElementById('noteList');
+      const searchQuery = document.getElementById('searchBox').value.toLowerCase();
+      listContainer.innerHTML = '';
+
+      // Sort pinned notes to the top
+      let filteredNotes = notes.filter(n => 
+        n.title.toLowerCase().includes(searchQuery) || n.body.toLowerCase().includes(searchQuery)
+      );
+
+      filteredNotes.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+      filteredNotes.forEach(note => {
+        const li = document.createElement('li');
+        li.className = `note-item ${note.id === currentNoteId ? 'active' : ''} ${note.pinned ? 'pinned' : ''}`;
+        li.onclick = () => selectNote(note.id);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'note-info';
+        infoDiv.innerHTML = `<span class="note-title-text">${note.pinned ? '📌 ' : ''}${note.title}</span>`;
+
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'note-actions';
+
+        const pinBtn = document.createElement('button');
+        pinBtn.className = 'btn-icon';
+        pinBtn.innerHTML = note.pinned ? '📌' : '📍';
+        pinBtn.title = note.pinned ? "Unpin Note" : "Pin Note";
+        pinBtn.onclick = (e) => togglePin(note.id, e);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-icon';
+        delBtn.innerHTML = '✕';
+        delBtn.style.color = '#ff4d4d';
+        delBtn.onclick = (e) => deleteNote(note.id, e);
+
+        actionDiv.appendChild(pinBtn);
+        actionDiv.appendChild(delBtn);
+
+        li.appendChild(infoDiv);
+        li.appendChild(actionDiv);
+        listContainer.appendChild(li);
+      });
+
+      const currentNote = notes.find(n => n.id === currentNoteId);
+      if (currentNote) {
+        document.getElementById('noteTitle').value = currentNote.title;
+        document.getElementById('noteBody').innerHTML = currentNote.body;
+        updateWordCount();
+      }
+    }
+
+    function updateListOnly() {
+      const activeItem = document.querySelector('.note-item.active .note-title-text');
+      const currentNote = notes.find(n => n.id === currentNoteId);
+      if (activeItem && currentNote) {
+        activeItem.innerText = (currentNote.pinned ? '📌 ' : '') + currentNote.title;
+      }
+    }
+
+    // --- Single Note Export ---
+    function exportSingleNote() {
+      const currentNote = notes.find(n => n.id === currentNoteId);
+      if (!currentNote) return;
+      
+      const plainText = document.getElementById('noteBody').innerText;
+      const blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${currentNote.title}.txt`;
+      a.click();
+    }
+
+    // --- Full Backup & Restore ---
+    function exportAllBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = "my_notes_backup.json";
+      a.click();
+    }
+
+    function restoreBackup(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            notes = JSON.parse(e.target.result);
+            saveToLocalStorage();
+            if (notes.length > 0) currentNoteId = notes[0].id;
+            render();
+            alert("Notes successfully restored! 🌸");
+          } catch (err) {
+            alert("Invalid backup file!");
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
