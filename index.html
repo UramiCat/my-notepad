@@ -279,6 +279,24 @@
 
     .btn-tool:hover { background-color: var(--accent-color); color: white; }
 
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-color);
+    }
+
+    .color-picker-input {
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: none;
+    }
+
     /* Content Editable Note Box */
     .note-body-editor {
       flex: 1;
@@ -293,14 +311,6 @@
       backdrop-filter: blur(6px);
       color: var(--text-color);
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    /* Highlight style */
-    mark {
-      background-color: #ffb6c1;
-      color: inherit;
-      padding: 0 2px;
-      border-radius: 3px;
     }
 
     .bottom-bar {
@@ -355,8 +365,31 @@
         <button class="btn-tool" onclick="formatText('bold')"><b>B</b></button>
         <button class="btn-tool" onclick="formatText('italic')"><i>I</i></button>
         <button class="btn-tool" onclick="formatText('underline')"><u>U</u></button>
-        <button class="btn-tool" onclick="formatText('hiliteColor', '#ffb6c1')">🖍️ Highlight</button>
-        <button class="btn-tool" onclick="insertChecklist()">☑️ Add Checklist Item</button>
+        
+        <!-- Highlighter Picker Options -->
+        <div class="color-picker-wrapper">
+          <span style="font-size: 0.85rem; font-weight: bold; color: var(--dark-color);">🖍️ Highlight:</span>
+          <input type="color" class="color-picker-input" id="highlighterColor" value="#ffb6c1" onchange="formatText('hiliteColor', this.value)">
+        </div>
+
+        <select class="select-tool" onchange="formatText('hiliteColor', this.value); this.selectedIndex=0;">
+          <option value="">Pastel Presets</option>
+          <option value="#ffb6c1">🌸 Pink</option>
+          <option value="#fff176">⭐ Yellow</option>
+          <option value="#b2dfdb">🍃 Mint Green</option>
+          <option value="#e1bee7">💜 Lavender</option>
+          <option value="#ffe0b2">🍑 Peach</option>
+          <option value="transparent">🚫 Remove Highlight</option>
+        </select>
+
+        <!-- Font Size Selector -->
+        <select class="select-tool" onchange="setFontSize(this.value)">
+          <option value="16px">Size: Normal</option>
+          <option value="14px">Size: Small</option>
+          <option value="18px">Size: Medium</option>
+          <option value="20px">Size: Large</option>
+          <option value="24px">Size: Extra Large</option>
+        </select>
 
         <!-- Font Choice -->
         <select class="select-tool" onchange="setFont(this.value)">
@@ -366,9 +399,11 @@
           <option value="font-rounded">Font: Comfortaa</option>
         </select>
 
+        <button class="btn-tool" onclick="insertChecklist()">☑️ Checklist</button>
+
         <!-- Category Tags -->
         <select class="select-tool" onchange="addTag(this.value); this.selectedIndex=0;">
-          <option value="">+ Add Category Tag</option>
+          <option value="">+ Category Tag</option>
           <option value="🌸 Personal">🌸 Personal</option>
           <option value="📚 Study">📚 Study</option>
           <option value="🛍️ Shopping">🛍️ Shopping</option>
@@ -376,7 +411,7 @@
           <option value="🎀 To-Do">🎀 To-Do</option>
         </select>
 
-        <button class="btn-tool" onclick="exportSingleNote()">📥 Export Note (.txt)</button>
+        <button class="btn-tool" onclick="exportSingleNote()">📥 Export (.txt)</button>
       </div>
     </div>
 
@@ -407,7 +442,7 @@
       }
 
       if (notes.length === 0) {
-        createNewNote("Welcome Note 💖", "<div><b>All 7 Mega Features are Ready!</b></div><div><br></div><div>• 📌 <b>Pin Notes:</b> Click the pin next to a note title.</div><div>• 🔍 <b>Search:</b> Use the top-left box to filter.</div><div>• ☑️ <b>Checklists:</b> Click 'Add Checklist Item' above.</div><div>• 🖍️ <b>Text Styling:</b> Highlight, bold, or change fonts!</div><div>• 📥 <b>Backup & Export:</b> Save single notes or backup everything.</div>");
+        createNewNote("Welcome Note 💖", "<div><b>Custom Color Highlighter & Font Size Controls Added!</b></div><div><br></div><div>• 🖍️ Choose any highlighter shade with the color picker or preset dropdown.</div><div>• Adjust text size using the font size selector.</div>");
       } else {
         currentNoteId = notes[0].id;
         render();
@@ -425,6 +460,20 @@
       localStorage.setItem('my_ultimate_font', fontClass);
     }
 
+    function setFontSize(size) {
+      const selection = window.getSelection();
+      if (!selection.rangeCount || selection.isCollapsed) {
+        document.getElementById('noteBody').style.fontSize = size;
+      } else {
+        const span = document.createElement('span');
+        span.style.fontSize = size;
+        const range = selection.getRangeAt(0);
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      }
+      saveCurrentNote();
+    }
+
     function formatText(command, value = null) {
       document.execCommand(command, false, value);
       saveCurrentNote();
@@ -438,7 +487,7 @@
 
     function addTag(tag) {
       if (!tag) return;
-      const tagHTML = ` &nbsp;<mark><b>${tag}</b></mark>&nbsp; `;
+      const tagHTML = ` &nbsp;<mark style="background-color: #ffb6c1;"><b>${tag}</b></mark>&nbsp; `;
       document.execCommand('insertHTML', false, tagHTML);
       saveCurrentNote();
     }
@@ -536,7 +585,6 @@
       const searchQuery = document.getElementById('searchBox').value.toLowerCase();
       listContainer.innerHTML = '';
 
-      // Sort pinned notes to the top
       let filteredNotes = notes.filter(n => 
         n.title.toLowerCase().includes(searchQuery) || n.body.toLowerCase().includes(searchQuery)
       );
@@ -591,7 +639,6 @@
       }
     }
 
-    // --- Single Note Export ---
     function exportSingleNote() {
       const currentNote = notes.find(n => n.id === currentNoteId);
       if (!currentNote) return;
@@ -604,7 +651,6 @@
       a.click();
     }
 
-    // --- Full Backup & Restore ---
     function exportAllBackup() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
       const a = document.createElement('a');
